@@ -4,6 +4,7 @@
 #include<stdbool.h>
 #include<time.h>
 
+/* gcc -m hoge*/
 bool primaryNum(long number){
     int i=0;
     bool flag=true;
@@ -83,50 +84,53 @@ long euclidEx(long a,long b){
     }
     return 0;
 }
-long encrypt(long a,long e,long n,long powNum,long result){
-    long pow=2,i=1,r_pow=2,result;
-    while(pow*2<e){
-        pow*2;
-    }
-    while(pow!=r_pow){
-        result = (long)powl(a,r_pow)%n;
-    }
-    /*
-    long code,i=2,tempE=2;
-    long tempA = a;
-    long result;
-    bool checkFlag = false;
-    while(tempE*2<=e){
-        tempE=tempE*2;
-    }
-    while(tempE!=i){
-        tempA = (long)powl(tempA,i)%n;
-        i=i*2;
-    }
-    result = tempA;
-    while(checkFlag){
-        if(e-tempA==0){
-            return result
-        }
-    }*/
-    return 0;
+/*バイナリ法
+**a^e≡result mod n
+**ウィキペディアの執筆者. “冪剰余”. ウィキペディア日本語版.
+**2018-10-23. https://ja.wikipedia.org/w/index.php?title=%E5%86%AA%E5%89%B0%E4%BD%99&oldid=70382867, (参照 2018-10-23).
+**を参考
+*/
+long modpow(long a,long e,long n){
+	long result = 1;
+	while(e>0){
+		if(e&1==1){
+			result = (result*a)%n;
+		}
+		e>>=1;
+		a=(a*a)%n;
+	}
+	return result;
 }
+/*
+** 暗号化
+*/
+long encryption(long a,long e,long n){
+    long code = modpow(a,e,n);
+    if(code<0){
+		code = (code+n)%n;
+	}
+	return code;
+}
+/*
+** 復号化
+*/
+long decryption(long b,long d,long n){
+    return modpow(b,d,n);
+}
+
 int main(){
-    encrypt(12,19,35,1,1);
     long q,p,n,e,d;
     long demoNum = 634;
     long code,plaintext;
     srand((unsigned) time(NULL));
     while(1){
-        q=rand()%(999-1+1)+1;
-        q=5;
+        q=rand()%(9999-5+1)+5;
         if(primaryNum(q)){
             break;
         }
     }
     while(1){
-        p=rand()%(9999-1+1)+1;
-        p=3;
+        p=rand()%(9999-5+1)+5;
         if(primaryNum(p)&&p!=q){
             break;
         }
@@ -134,7 +138,7 @@ int main(){
     n=q*p;
     printf("n(公開鍵1)->%ld\n",n);
     while(1){
-        e=rand()%((n-1)-1+1)+1;
+        e=rand()%((n-1)-5+1)+5;
         if(gcd((p-1)*(q-1),e)==1){
             break;
         }
@@ -142,5 +146,9 @@ int main(){
     printf("e(公開鍵2)->%ld\n",e);
     d = euclidEx(e,(p-1)*(q-1));
     printf("d(秘密鍵)->%ld\n",d);
+    code = encryption(demoNum,e,n);
+    printf("%ldを%ld,%ldで暗号化->%ld\n",demoNum,n,e,code);
+    plaintext = encryption(code,d,n);
+    printf("%ldを%ld,%ldで復号化->%ld\n",code,n,d,plaintext);
     return 0; 
 }
