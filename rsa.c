@@ -148,7 +148,7 @@ int main(){
     printf("d(秘密鍵)->%ld\n",d);
     code = encryption(demoNum,e,n);
     printf("%ldを%ld,%ldで暗号化->%ld\n",demoNum,n,e,code);
-    plaintext = encryption(code,d,n);
+    plaintext = decryption(code,d,n);
     printf("%ldを%ld,%ldで復号化->%ld\n",code,n,d,plaintext);
     return 0; 
 }
