@@ -120,9 +120,10 @@ long decryption(long b,long d,long n){
 
 int main(){
     long q,p,n,e,d;
-    long demoNum = 634;
+    long demoNum;
     long code,plaintext;
     srand((unsigned) time(NULL));
+    scanf("%ld",&demoNum);
     while(1){
         q=rand()%(9999-5+1)+5;
         if(primaryNum(q)){
