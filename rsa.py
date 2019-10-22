@@ -59,56 +59,61 @@ def modpow(a:int,e:int,n:int):
         a=(a*a)%n
     return result
 
-def encryption(a:int,e:int,n:int):
+def encryption(text:str,e:int,n:int):
+    a = encodeASCII(encodeBase32(text))
     code = modpow(a,e,n)
     if code<0:
         code = (code+n)%n
     return code
 
 def decryption(a:int,e:int,n:int):
-    return  modpow(a,e,n)
+    return  decodeBase32(decodeASCII(str(modpow(a,e,n))))
 
 
 def encodeASCII(text):
     strCode=""
     for char in text:
         strCode += str(ord(char))
-    return strCode
+    return int(strCode)
 
 def decodeASCII(ascii):
     text=""
-    for char in ascii:
-        text += char(char)
+    for i in range(len(ascii)):
+        if i%2==0:
+            text += chr(int(ascii[i]+ascii[i+1]))
     return text
 
 def encodeBase32(text):
     return base64.b32encode(text.encode('utf-8')).decode('utf-8')
 def decodeBase32(text):
-    return base64.b32encode(text.encode('utf-8')).decode('utf-8')
+    return base64.b32decode(text.encode('utf-8')).decode('utf-8')
 
 def main():
-    demoNum=654
+    print("暗号化テスト\n入力:")
+    inputText=input()
     while True:
-        q=secrets.randbits(10)
+        q:int=secrets.randbits(60)
         if primaryNum(q):
             break
     while True:
-        p=secrets.randbits(10)
+        p:int=secrets.randbits(60)
         if primaryNum(p):
             break
     n=q*p
     while True:
-        e=secrets.randbelow(n-1)
+        e:int=secrets.randbelow(n-1)
         if gcd((p-1)*(q-1),e)==1:
             break
     d = euclidEx(e,(p-1)*(q-1))
-    code = encryption(demoNum,e,n)
+    code = encryption(inputText,e,n)
     plaintext = decryption(code,d,n)
-    print("demoNum->{}".format(demoNum))
+    print("inputText->{}".format(inputText))
+    print("inputTextNum->{}".format(encodeASCII(encodeBase32(inputText))))
     print("n->{}".format(n))
     print("e->{}".format(e))
     print("d->{}".format(d))
-    print("{}を{},{}で暗号化->{}".format(demoNum,n,e,code))
+    print("{}を{},{}で暗号化->{}".format(inputText,n,e,code))
     print("{}を{},{}で復号化->{}".format(code,n,d,plaintext))
+
 
 main()
