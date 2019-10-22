@@ -2,22 +2,30 @@ import math
 import string
 import base64
 import secrets
+
+#Miller–Rabin primality test
 def primaryNum(number):
-    if number<2:
+    if number==2:
+        return True
+    if number%2==0:
         return False
-    for i in range(2, int(math.sqrt(number))):
-        if number%i==0:
+    k=20
+    d = (number-1)//2
+    s = 1
+    while d%2==0:
+        d//=2
+        s+=1
+    for i in range(k):
+        a=secrets.randbelow(number-3)+2
+        t=d
+        y=modpow(a,t,number)
+        while t != number-1 and y != 1 and y != number-1:
+            y=modpow(y,2,number)
+            t*=2
+        if y!=number-1 and t%2==0:
             return False
     return True
 
-def gcd(a,b):
-    if a<b:
-        return False
-    if b==0:
-        return a
-    else:
-        return gcd(b,a%b)
-    
 
 def euclidEx(a,b):
     x1 = 1
@@ -51,17 +59,18 @@ def euclidEx(a,b):
         result2 = result3
 
 def modpow(a:int,e:int,n:int):
-    result:int=1
-    while e>0:
-        if e&1==1:
-            result=(result*a)%n
-        e>>=1
-        a=(a*a)%n
-    return result
+    #result:int=1
+    #while e>0:
+    #    if e&1==1:
+    #        result=(result*a)%n
+    #    e>>=1
+    #    a=(a*a)%n
+    return pow(a,e,n)
 
 def encryption(text:str,e:int,n:int):
     a = encodeASCII(encodeBase32(text))
     code = modpow(a,e,n)
+    print(str(code).encode('utf-8'))
     if code<0:
         code = (code+n)%n
     return code
@@ -92,28 +101,30 @@ def main():
     print("暗号化テスト\n入力:")
     inputText=input()
     while True:
-        q:int=secrets.randbits(60)
+        q:int=secrets.randbits(1024)
         if primaryNum(q):
             break
     while True:
-        p:int=secrets.randbits(60)
+        p:int=secrets.randbits(1024//2)
         if primaryNum(p):
             break
     n=q*p
     while True:
-        e:int=secrets.randbelow(n-1)
-        if gcd((p-1)*(q-1),e)==1:
+        e:int=secrets.randbits(16)
+        if math.gcd((p-1)*(q-1),e)==1:
             break
     d = euclidEx(e,(p-1)*(q-1))
     code = encryption(inputText,e,n)
     plaintext = decryption(code,d,n)
     print("inputText->{}".format(inputText))
     print("inputTextNum->{}".format(encodeASCII(encodeBase32(inputText))))
-    print("n->{}".format(n))
-    print("e->{}".format(e))
-    print("d->{}".format(d))
-    print("{}を{},{}で暗号化->{}".format(inputText,n,e,code))
-    print("{}を{},{}で復号化->{}".format(code,n,d,plaintext))
+    #print("n->{}".format(n))
+    #print("e->{}".format(e))
+    #print("d->{}".format(d))
+    #print("{}を{},{}で暗号化->{}".format(inputText,n,e,code))
+    print("{}を暗号化->{}".format(inputText,code))
+    #print("{}を{},{}で復号化->{}".format(code,n,d,plaintext))
+    print("{}を復号化->{}".format(code,plaintext))
 
 
 main()
