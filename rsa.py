@@ -105,7 +105,7 @@ def main():
         if primaryNum(q):
             break
     while True:
-        p:int=secrets.randbits(1024//2)
+        p:int=secrets.randbits(1024)
         if primaryNum(p):
             break
     n=q*p
