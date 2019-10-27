@@ -70,7 +70,6 @@ def modpow(a:int,e:int,n:int):
 def encryption(text:str,e:int,n:int):
     a = encodeASCII(encodeBase32(text))
     code = modpow(a,e,n)
-    print(str(code).encode('utf-8'))
     if code<0:
         code = (code+n)%n
     return code
