@@ -26,6 +26,12 @@ def primaryNum(number):
             return False
     return True
 
+def getD(e,n):
+	i=1;
+	while(True):
+		if ((i*n+1)%e)==0:
+			return (i*n+1)//e
+		i+=1
 
 def euclidEx(a,b):
     x1 = 1
@@ -112,18 +118,17 @@ def main():
         e:int=secrets.randbits(16)
         if math.gcd((p-1)*(q-1),e)==1:
             break
-    d = euclidEx(e,(p-1)*(q-1))
+    d = getD(e,(p-1)*(q-1))
     code = encryption(inputText,e,n)
     plaintext = decryption(code,d,n)
     print("inputText->{}".format(inputText))
     print("inputTextNum->{}".format(encodeASCII(encodeBase32(inputText))))
     #print("n->{}".format(n))
     #print("e->{}".format(e))
-    #print("d->{}".format(d))
+    print("d->{}".format(d))
     #print("{}を{},{}で暗号化->{}".format(inputText,n,e,code))
-    print("{}を暗号化->{}".format(inputText,code))
+    print("{}を暗号化->{}復号化->{}".format(inputText,hex(code),plaintext))
     #print("{}を{},{}で復号化->{}".format(code,n,d,plaintext))
-    print("{}を復号化->{}".format(code,plaintext))
 
-
-main()
+if __name__ == '__main__':
+	main()
