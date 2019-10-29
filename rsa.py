@@ -27,7 +27,7 @@ def primaryNum(number):
     return True
 
 def getD(e,n):
-	i=1;
+	i=1
 	while(True):
 		if ((i*n+1)%e)==0:
 			return (i*n+1)//e
